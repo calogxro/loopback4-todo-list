@@ -6,7 +6,13 @@ export async function migrate(args: string[]) {
 
   const app = new TodoListApplication();
   await app.boot();
-  await app.migrateSchema({existingSchema});
+  await app.migrateSchema({
+    existingSchema,
+    // The order of table creation is important.
+    // A referenced table must exist before creating a
+    // foreign key constraint.
+    models: ['TodoList', 'Todo', 'TodoListImage'],
+  });
 
   // Connectors usually keep a pool of opened connections,
   // this keeps the process running even after all work is done.
